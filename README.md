@@ -73,43 +73,15 @@ Once the server is running, open the following URLs in your browser:
 
 ```text
 ├── server.py                  # FastAPI + WebSockets + SSE + In-Memory Engine
-├── requirements.txt           # Python dependencies (fastapi, uvicorn, websockets, matplotlib, numpy)
+├── requirements.txt           # Python dependencies (fastapi, uvicorn)
 ├── .gitignore                 # Standard Python gitignore rules
-├── public/
-│   ├── index.html             # Role selection landing hub
-│   ├── create.html            # Instructor portal: Create & activate classroom polls
-│   ├── voter.html             # Student voter UI (mobile-first, exponential backoff)
-│   └── projector.html         # Classroom projector dashboard with live bar animations
-├── tests/
-│   ├── load_test_200.py       # 200 concurrent bot benchmark harness (burst + 10% retries)
-│   ├── plot_metrics.py        # Generates CDF and latency percentile breakdown plots
-│   ├── benchmark_results.json # Raw benchmark telemetry data
-│   └── benchmark_plots.png    # 300 DPI high-resolution evaluation figures
-└── README.md                  # Project overview and run guide
+├── README.md                  # Project overview and run guide
+└── public/
+    ├── index.html             # Role selection landing hub
+    ├── create.html            # Instructor portal: Create & activate classroom polls
+    ├── voter.html             # Student voter UI (mobile-first, exponential backoff)
+    └── projector.html         # Classroom projector dashboard with live bar animations
 ```
-
----
-
-## 🧪 Testing & Evaluation Suite
-
-### 1. Run the 200-Student Burst Benchmark
-In another terminal while `server.py` is running:
-```bash
-python tests/load_test_200.py
-```
-- Spawns **200 concurrent WebSocket bot connections** simultaneously.
-- Synchronizes arrival using `asyncio.Barrier` and triggers a **fan-in burst within a 1-second window**.
-- Simulates an intentional **10% unacknowledged client retry** scenario (20 bots re-transmit their vote payload).
-- Verifies that the server registers **exactly 200 unique votes and 20 ignored duplicates**.
-
-### 2. Generate Evaluation Plots
-```bash
-python tests/plot_metrics.py
-```
-Outputs `tests/benchmark_plots.png` containing:
-1. Response Time Histogram with Mean and p95 overlays.
-2. Latency Percentile Breakdown (Min, p50, Mean, p95, p99, Max).
-3. Fault Tolerance & Idempotency Audit Summary.
 
 ---
 
@@ -128,5 +100,5 @@ Outputs `tests/benchmark_plots.png` containing:
 | `POST /api/polls/{id}/activate` | HTTP (JSON) | Switch active poll in real time |
 | `GET /api/poll/active` | HTTP (JSON) | Fetch active poll details |
 | `GET /api/metrics` | HTTP (JSON) | Live server metrics summary |
-| `POST /api/reset` | HTTP (JSON) | Reset active poll state for benchmark runs |
+| `POST /api/reset` | HTTP (JSON) | Reset active poll state |
 | `GET /docs` | HTTP (Swagger) | Interactive OpenAPI documentation |
