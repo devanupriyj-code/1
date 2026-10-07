@@ -3,408 +3,252 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Classroom Poll | Project 26</title>
+  <title>Create Poll</title>
   <style>
-    :root {
-      --bg: #0b1329;
-      --card-bg: #152243;
-      --border: #293d6e;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --success: #10b981;
-      --danger: #ef4444;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px 16px;
+      font-family: Arial, sans-serif;
+      margin: 30px auto;
+      max-width: 750px;
+      line-height: 1.5;
+      color: #222;
+      background: #fafafa;
+      padding: 0 15px;
     }
-
-    .container {
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 12px;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      transition: all 0.15s;
-    }
-
-    .nav-link:hover {
-      background: var(--card-bg);
-      color: var(--text);
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-    }
-
     h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      background: linear-gradient(90deg, #60a5fa, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
     }
-
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 24px;
+    .nav {
+      margin-bottom: 25px;
+      padding: 10px;
+      background: #eee;
+      border: 1px solid #ccc;
     }
-
-    .form-group {
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      color: #0366d6;
+      font-weight: bold;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 18px;
       margin-bottom: 20px;
     }
-
+    .form-group {
+      margin-bottom: 15px;
+    }
     label {
       display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #e2e8f0;
+      font-weight: bold;
+      margin-bottom: 5px;
     }
-
-    input[type="text"], textarea {
+    input[type="text"] {
       width: 100%;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.15s;
+      box-sizing: border-box;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #bbb;
+      border-radius: 3px;
     }
-
-    input[type="text"]:focus, textarea:focus {
-      border-color: var(--primary);
-    }
-
-    .options-builder {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .option-row {
+    .opt-row {
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 8px;
     }
-
-    .option-badge {
-      width: 34px;
-      height: 34px;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--primary);
-      flex-shrink: 0;
+    .opt-key {
+      font-weight: bold;
+      width: 25px;
+      text-align: center;
     }
-
-    .btn-remove-opt {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
+    button {
+      padding: 7px 14px;
+      font-size: 14px;
+      border: 1px solid #999;
+      background: #eee;
       cursor: pointer;
-      font-size: 1.2rem;
-      padding: 4px 8px;
-      border-radius: 6px;
+      border-radius: 3px;
     }
-
-    .btn-remove-opt:hover {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
+    button:hover {
+      background: #ddd;
     }
-
-    .btn-add-opt {
-      background: transparent;
-      border: 1px dashed var(--border);
-      color: var(--primary);
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.15s;
-    }
-
-    .btn-add-opt:hover {
-      background: rgba(59, 130, 246, 0.1);
-      border-color: var(--primary);
-    }
-
     .btn-submit {
-      width: 100%;
-      background: var(--primary);
+      background: #28a745;
       color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 24px;
-      transition: background 0.15s, transform 0.05s;
+      border-color: #218838;
+      font-weight: bold;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
     }
-
     .btn-submit:hover {
-      background: var(--primary-hover);
+      background: #218838;
     }
-
-    .btn-submit:active {
-      transform: scale(0.99);
-    }
-
-    /* Notification Banner */
     .banner {
       display: none;
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      margin-top: 16px;
+      padding: 10px 14px;
+      margin-top: 15px;
+      border-radius: 4px;
     }
-
     .banner-success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid var(--success);
-      color: #6ee7b7;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
-
     .banner-error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--danger);
-      color: #fca5a5;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
     }
-
-    /* Existing Polls Table */
-    .polls-list-header {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 14px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
-
-    .poll-item {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
     }
-
-    .poll-item.active-item {
-      border-color: var(--primary);
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    th {
+      background: #eee;
     }
-
-    .poll-item-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-
-    .poll-item-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .btn-activate {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .btn-activate:hover {
-      background: var(--primary);
+    .active-tag {
+      background: #28a745;
       color: #fff;
-    }
-
-    .active-badge {
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid var(--success);
-      color: var(--success);
-      font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 9999px;
-      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="top-nav">
-      <div style="font-weight: 700; font-size: 1.1rem; color: #94a3b8;">Poll Manager</div>
-      <div class="nav-links">
-        <a href="/voter.html" class="nav-link">📱 Voter UI</a>
-        <a href="/projector.html" class="nav-link">📽️ Projector UI</a>
+  <h1>Create &amp; Manage Polls</h1>
+
+  <div class="nav">
+    <a href="/index.html">Home</a>
+    <a href="/create.html">Create Poll</a>
+    <a href="/voter.html">Student Voter</a>
+    <a href="/projector.html">Projector Screen</a>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top: 0;">Create New Poll</h2>
+    <form id="poll-form">
+      <div class="form-group">
+        <label for="question-input">Poll Question:</label>
+        <input type="text" id="question-input" required placeholder="Type your question here...">
       </div>
-    </div>
 
-    <!-- Create Poll Card -->
-    <div class="card">
-      <h1>Create New Classroom Poll</h1>
-      <p class="subtitle">Broadcast a new question live to all connected student phones and classroom projector screens.</p>
-
-      <form id="poll-form">
-        <div class="form-group">
-          <label for="question-input">Poll Question</label>
-          <input type="text" id="question-input" required placeholder="e.g. Which Layer-4 Protocol is connectionless?" />
-        </div>
-
-        <div class="form-group">
-          <label>Options (2 to 6 Choices)</label>
-          <div class="options-builder" id="options-list">
-            <div class="option-row" data-key="A">
-              <span class="option-badge">A</span>
-              <input type="text" class="opt-input" required placeholder="Option A description" />
-            </div>
-            <div class="option-row" data-key="B">
-              <span class="option-badge">B</span>
-              <input type="text" class="opt-input" required placeholder="Option B description" />
-            </div>
-            <div class="option-row" data-key="C">
-              <span class="option-badge">C</span>
-              <input type="text" class="opt-input" placeholder="Option C description (optional)" />
-              <button type="button" class="btn-remove-opt" onclick="removeOption(this)">&times;</button>
-            </div>
-            <div class="option-row" data-key="D">
-              <span class="option-badge">D</span>
-              <input type="text" class="opt-input" placeholder="Option D description (optional)" />
-              <button type="button" class="btn-remove-opt" onclick="removeOption(this)">&times;</button>
-            </div>
+      <div class="form-group">
+        <label>Options (2 to 6 choices):</label>
+        <div id="options-container">
+          <div class="opt-row" data-key="A">
+            <span class="opt-key">A</span>
+            <input type="text" class="opt-input" required placeholder="Option A description">
           </div>
-          <button type="button" class="btn-add-opt" id="btn-add-opt" style="margin-top: 10px; width: 100%;">+ Add Another Option</button>
+          <div class="opt-row" data-key="B">
+            <span class="opt-key">B</span>
+            <input type="text" class="opt-input" required placeholder="Option B description">
+          </div>
+          <div class="opt-row" data-key="C">
+            <span class="opt-key">C</span>
+            <input type="text" class="opt-input" placeholder="Option C description (optional)">
+            <button type="button" onclick="removeOption(this)">Remove</button>
+          </div>
+          <div class="opt-row" data-key="D">
+            <span class="opt-key">D</span>
+            <input type="text" class="opt-input" placeholder="Option D description (optional)">
+            <button type="button" onclick="removeOption(this)">Remove</button>
+          </div>
         </div>
-
-        <button type="submit" class="btn-submit" id="btn-submit">🚀 Publish Live Poll</button>
-      </form>
-
-      <div id="status-banner" class="banner"></div>
-    </div>
-
-    <!-- Existing Polls Library -->
-    <div class="card">
-      <div class="polls-list-header">All Polls</div>
-      <div id="polls-container">
-        <div style="color: var(--text-muted); font-size: 0.9rem;">Loading polls...</div>
+        <button type="button" id="btn-add" style="margin-top: 8px;">+ Add Choice</button>
       </div>
-    </div>
+
+      <button type="submit" class="btn-submit">Publish Live Poll</button>
+    </form>
+
+    <div id="banner" class="banner"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top: 0;">Existing Polls</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 90px;">Poll ID</th>
+          <th>Question</th>
+          <th style="width: 70px;">Votes</th>
+          <th style="width: 90px;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="polls-table">
+        <tr><td colspan="4">Loading polls...</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <script>
     const alphabet = ['A', 'B', 'C', 'D', 'E', 'F'];
-    const optionsList = document.getElementById('options-list');
-    const btnAddOpt = document.getElementById('btn-add-opt');
+    const container = document.getElementById('options-container');
+    const btnAdd = document.getElementById('btn-add');
     const form = document.getElementById('poll-form');
-    const banner = document.getElementById('status-banner');
-    const pollsContainer = document.getElementById('polls-container');
+    const banner = document.getElementById('banner');
+    const pollsTable = document.getElementById('polls-table');
 
-    function refreshOptionBadges() {
-      const rows = optionsList.querySelectorAll('.option-row');
+    function refreshKeys() {
+      const rows = container.querySelectorAll('.opt-row');
       rows.forEach((row, idx) => {
         const key = alphabet[idx];
         row.dataset.key = key;
-        row.querySelector('.option-badge').textContent = key;
+        row.querySelector('.opt-key').textContent = key;
       });
-      btnAddOpt.style.display = rows.length >= 6 ? 'none' : 'block';
+      btnAdd.style.display = rows.length >= 6 ? 'none' : 'inline-block';
     }
 
     function removeOption(btn) {
-      const row = btn.closest('.option-row');
-      if (optionsList.querySelectorAll('.option-row').length > 2) {
+      const row = btn.closest('.opt-row');
+      if (container.querySelectorAll('.opt-row').length > 2) {
         row.remove();
-        refreshOptionBadges();
+        refreshKeys();
       }
     }
 
-    btnAddOpt.addEventListener('click', () => {
-      const currentCount = optionsList.querySelectorAll('.option-row').length;
-      if (currentCount < 6) {
-        const nextKey = alphabet[currentCount];
-        const row = document.createElement('div');
-        row.className = 'option-row';
-        row.dataset.key = nextKey;
-        row.innerHTML = `
-          <span class="option-badge">${nextKey}</span>
-          <input type="text" class="opt-input" placeholder="Option ${nextKey} description" />
-          <button type="button" class="btn-remove-opt" onclick="removeOption(this)">&times;</button>
+    btnAdd.addEventListener('click', () => {
+      const count = container.querySelectorAll('.opt-row').length;
+      if (count < 6) {
+        const key = alphabet[count];
+        const div = document.createElement('div');
+        div.className = 'opt-row';
+        div.dataset.key = key;
+        div.innerHTML = `
+          <span class="opt-key">${key}</span>
+          <input type="text" class="opt-input" placeholder="Option ${key} description">
+          <button type="button" onclick="removeOption(this)">Remove</button>
         `;
-        optionsList.appendChild(row);
-        refreshOptionBadges();
+        container.appendChild(div);
+        refreshKeys();
       }
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const question = document.getElementById('question-input').value.trim();
-      const rows = optionsList.querySelectorAll('.option-row');
+      const rows = container.querySelectorAll('.opt-row');
       const options = {};
 
       rows.forEach(row => {
         const key = row.dataset.key;
         const val = row.querySelector('.opt-input').value.trim();
-        if (val) {
-          options[key] = val;
-        }
+        if (val) options[key] = val;
       });
 
       if (Object.keys(options).length < 2) {
-        showBanner('Please provide at least 2 options for the poll.', 'error');
+        showBanner('Please provide at least 2 non-empty options.', false);
         return;
       }
 
@@ -414,28 +258,22 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question, options })
         });
-
         const data = await res.json();
         if (res.ok) {
-          showBanner(`Poll created! Poll ID: ${data.poll.poll_id}. Automatically activated on all student screens and projectors.`, 'success');
+          showBanner(`Poll created successfully (ID: ${data.poll.poll_id}).`, true);
           document.getElementById('question-input').value = '';
-          rows.forEach((r, idx) => {
-            if (idx >= 2) r.remove();
-            else r.querySelector('.opt-input').value = '';
-          });
-          refreshOptionBadges();
           loadPolls();
         } else {
-          showBanner(data.error || 'Failed to create poll', 'error');
+          showBanner(data.error || 'Failed to create poll.', false);
         }
       } catch (err) {
-        showBanner('Network error reaching server', 'error');
+        showBanner('Network error connecting to server.', false);
       }
     });
 
-    function showBanner(msg, type) {
+    function showBanner(msg, isSuccess) {
       banner.textContent = msg;
-      banner.className = `banner banner-${type}`;
+      banner.className = `banner ${isSuccess ? 'banner-success' : 'banner-error'}`;
       banner.style.display = 'block';
     }
 
@@ -445,34 +283,32 @@
         const data = await res.json();
         renderPolls(data.polls, data.activePollId);
       } catch (err) {
-        console.error(err);
+        pollsTable.innerHTML = '<tr><td colspan="4">Error loading polls.</td></tr>';
       }
     }
 
-    function renderPolls(polls, activePollId) {
+    function renderPolls(polls, activeId) {
       if (!polls || polls.length === 0) {
-        pollsContainer.innerHTML = '<div style="color: var(--text-muted);">No polls created yet.</div>';
+        pollsTable.innerHTML = '<tr><td colspan="4" style="color: #777;">No polls created yet.</td></tr>';
         return;
       }
-
-      pollsContainer.innerHTML = '';
+      pollsTable.innerHTML = '';
       polls.forEach(p => {
-        const isActive = p.poll_id === activePollId;
-        const div = document.createElement('div');
-        div.className = `poll-item ${isActive ? 'active-item' : ''}`;
-        div.innerHTML = `
-          <div>
-            <div class="poll-item-title">${escapeHtml(p.question)}</div>
-            <div class="poll-item-meta">ID: <code>${p.poll_id}</code> &bull; Total Votes: <strong>${p.totalVotes}</strong></div>
-          </div>
-          <div>
+        const tr = document.createElement('tr');
+        const isActive = p.poll_id === activeId;
+        tr.innerHTML = `
+          <td><code>${p.poll_id}</code></td>
+          <td class="q-cell"></td>
+          <td>${p.totalVotes}</td>
+          <td>
             ${isActive 
-              ? '<span class="active-badge">● Active Now</span>' 
-              : `<button class="btn-activate" onclick="activatePoll('${p.poll_id}')">Activate</button>`
+              ? '<span class="active-tag">Active</span>' 
+              : `<button type="button" onclick="activatePoll('${p.poll_id}')">Activate</button>`
             }
-          </div>
+          </td>
         `;
-        pollsContainer.appendChild(div);
+        tr.querySelector('.q-cell').textContent = p.question;
+        pollsTable.appendChild(tr);
       });
     }
 
@@ -480,18 +316,12 @@
       try {
         const res = await fetch(`/api/polls/${poll_id}/activate`, { method: 'POST' });
         if (res.ok) {
-          showBanner(`Poll ${poll_id} is now live!`, 'success');
+          showBanner(`Poll ${poll_id} activated!`, true);
           loadPolls();
         }
       } catch (err) {
-        console.error(err);
+        showBanner('Failed to activate poll.', false);
       }
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
     }
 
     loadPolls();

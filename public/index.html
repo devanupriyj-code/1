@@ -3,164 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project 26: E-Voting & Live Polling System</title>
+  <title>Classroom E-Voting System</title>
   <style>
-    :root {
-      --bg: #0b1329;
-      --card-bg: #152243;
-      --border: #293d6e;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      font-family: Arial, sans-serif;
+      margin: 30px auto;
+      max-width: 750px;
+      line-height: 1.5;
+      color: #222;
+      background: #fafafa;
+      padding: 0 15px;
     }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      text-align: center;
-    }
-
     h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(90deg, #60a5fa, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
     }
-
-    p.tagline {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      margin-bottom: 40px;
-      line-height: 1.5;
+    .nav {
+      margin-bottom: 25px;
+      padding: 10px;
+      background: #eee;
+      border: 1px solid #ccc;
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 20px;
-      text-align: left;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+    .nav a {
+      margin-right: 15px;
       text-decoration: none;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.2s ease-in-out;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      color: #0366d6;
+      font-weight: bold;
     }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary);
-      box-shadow: 0 20px 30px -10px rgba(59, 130, 246, 0.3);
+    .nav a:hover {
+      text-decoration: underline;
     }
-
-    .card-icon {
-      font-size: 2.2rem;
-      margin-bottom: 16px;
-    }
-
-    .card h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
+    .box {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 16px;
       margin-bottom: 20px;
     }
-
-    .card-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--primary);
+    .box h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.2rem;
     }
-
+    .box p {
+      color: #555;
+    }
+    .btn-link {
+      display: inline-block;
+      padding: 8px 14px;
+      background: #0366d6;
+      color: #fff !important;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    .btn-link:hover {
+      background: #024ea4;
+      text-decoration: none;
+    }
     footer {
-      margin-top: 48px;
-      color: var(--text-muted);
+      text-align: center;
+      margin-top: 40px;
       font-size: 0.85rem;
+      color: #777;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Classroom Live E-Voting System</h1>
-    <p class="tagline">
-      High-Concurrency In-Memory Architecture for Burst Campus Wi-Fi Networks.<br>
-      Select a role below to get started:
-    </p>
+  <h1>Classroom Live E-Voting System</h1>
+  <p>Lightweight high-concurrency polling system for classroom environments.</p>
 
-    <div class="grid">
-      <!-- Create Poll -->
-      <a href="/create.html" class="card">
-        <div>
-          <div class="card-icon">➕</div>
-          <h2>Create a Poll</h2>
-          <p>Professor / Instructor portal. Create questions, set custom options (A, B, C, D...), and switch active polls in real time.</p>
-        </div>
-        <div class="card-action">Open Creator &rarr;</div>
-      </a>
-
-      <!-- Student Voter -->
-      <a href="/voter.html" class="card">
-        <div>
-          <div class="card-icon">📱</div>
-          <h2>Student Voter UI</h2>
-          <p>Mobile-responsive voting client over WebSockets with automatic retry, exponential backoff, and instant ACK delivery.</p>
-        </div>
-        <div class="card-action">Vote Now &rarr;</div>
-      </a>
-
-      <!-- Classroom Projector -->
-      <a href="/projector.html" class="card">
-        <div>
-          <div class="card-icon">📽️</div>
-          <h2>Projector Screen</h2>
-          <p>Large classroom display using Server-Sent Events (SSE). Renders live animated bar charts micro-batched every 100ms.</p>
-        </div>
-        <div class="card-action">View Telemetry &rarr;</div>
-      </a>
-    </div>
-
-    <footer>
-      Computer Networks Project 26 &bull; FastAPI &bull; WebSockets &bull; Server-Sent Events &bull; In-Memory Idempotency
-    </footer>
+  <div class="nav">
+    <a href="/index.html">Home</a>
+    <a href="/create.html">Create Poll</a>
+    <a href="/voter.html">Student Voter</a>
+    <a href="/projector.html">Projector Screen</a>
   </div>
+
+  <div class="box">
+    <h2>1. Create a Poll (Instructor)</h2>
+    <p>Author a new question with 2 to 6 choices and publish it live to all student phones and projector displays.</p>
+    <a href="/create.html" class="btn-link">Open Poll Creator &rarr;</a>
+  </div>
+
+  <div class="box">
+    <h2>2. Student Voter UI</h2>
+    <p>Mobile-friendly interface for students to vote over WebSockets with instant confirmation ACKs.</p>
+    <a href="/voter.html" class="btn-link">Open Voter Screen &rarr;</a>
+  </div>
+
+  <div class="box">
+    <h2>3. Classroom Projector Screen</h2>
+    <p>Large telemetry display streaming live results via Server-Sent Events (SSE) with live progress bars.</p>
+    <a href="/projector.html" class="btn-link">Open Projector Screen &rarr;</a>
+  </div>
+
+  <footer>
+    Computer Networks Project 26 &bull; Python FastAPI &bull; In-Memory Architecture
+  </footer>
 
 </body>
 </html>
