@@ -1,0 +1,8 @@
+# Backend (FastAPI server)
+fastapi>=0.110
+uvicorn[standard]>=0.30
+
+# Test harness & evaluation graphs
+websockets>=12.0
+matplotlib>=3.7
+numpy>=1.24

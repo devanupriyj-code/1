@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Student Voter Portal | Project 26</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-connecting {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .badge-online {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .badge-offline {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .voter-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .question-box {
+      margin-bottom: 24px;
+    }
+
+    .question-box h2 {
+      font-size: 1.1rem;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-option {
+      background: #27354a;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .btn-option:active {
+      transform: scale(0.98);
+    }
+
+    .btn-option:hover:not(:disabled) {
+      background: #334460;
+      border-color: var(--primary);
+    }
+
+    .btn-option .key {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .btn-option.selected {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .btn-option:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    /* State banners */
+    .status-card {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .status-submitting {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid var(--primary);
+      color: #93c5fd;
+    }
+
+    .status-confirmed {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--success);
+      color: #6ee7b7;
+      text-align: center;
+    }
+
+    .status-confirmed h3 {
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .status-retrying {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--warning);
+      color: #fcd34d;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.8rem;">
+      <a href="/index.html" style="color: #94a3b8; text-decoration: none;">&larr; Home</a>
+      <div style="display: flex; gap: 8px;">
+        <a href="/create.html" style="color: #60a5fa; text-decoration: none; font-weight: 600;">➕ Create Poll</a>
+        <span style="color: #334155;">|</span>
+        <a href="/projector.html" style="color: #94a3b8; text-decoration: none;">📽️ Projector</a>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>Live Classroom Poll</h1>
+      <span id="conn-badge" class="badge badge-connecting">
+        <span class="spinner" style="width: 10px; height: 10px; border-width: 1.5px;"></span> Connecting...
+      </span>
+    </div>
+
+    <div class="voter-meta">
+      <span>Student ID: <strong id="voter-id-display">Generating...</strong></span>
+      <span>Socket: <strong id="latency-display">-- ms</strong></span>
+    </div>
+
+    <div class="question-box">
+      <h2 id="question-text">Waiting for active poll...</h2>
+    </div>
+
+    <div class="options-grid" id="options-container">
+      <button class="btn-option" disabled data-choice="A">
+        <span class="key">A</span> <span class="label">Option A</span>
+      </button>
+      <button class="btn-option" disabled data-choice="B">
+        <span class="key">B</span> <span class="label">Option B</span>
+      </button>
+      <button class="btn-option" disabled data-choice="C">
+        <span class="key">C</span> <span class="label">Option C</span>
+      </button>
+      <button class="btn-option" disabled data-choice="D">
+        <span class="key">D</span> <span class="label">Option D</span>
+      </button>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="submitting-card" class="status-card status-submitting">
+      <span class="spinner"></span>
+      <div>
+        <div style="font-weight: 600;">Transmitting vote over WebSocket...</div>
+        <div style="font-size: 0.8rem; opacity: 0.85;" id="ack-retry-info">Awaiting application ACK</div>
+      </div>
+    </div>
+
+    <div id="confirmed-card" class="status-card status-confirmed">
+      <h3><span>✔</span> Vote Recorded!</h3>
+      <p style="font-size: 0.85rem;" id="ack-receipt-text">Your response is safely committed to server memory.</p>
+      <div style="font-size: 0.75rem; margin-top: 8px; opacity: 0.8; word-break: break-all;" id="ack-uuid-text"></div>
+    </div>
+
+    <div id="retry-card" class="status-card status-retrying">
+      <div style="font-weight: 600;">⚠️ Wi-Fi Delay / Retrying transmission...</div>
+      <div style="font-size: 0.8rem; margin-top: 4px;" id="retry-desc">Sending retransmission frame with exponential backoff.</div>
+    </div>
+
+    <div class="footer">
+      Computer Networks Project 26 &bull; Sub-millisecond Fault-Tolerant E-Voting
+    </div>
+  </div>
+
+  <script>
+    // =====================================================================================
+    // CLIENT-SIDE NETWORKING & RETRY STATE ENGINE
+    // =====================================================================================
+
+    // Retrieve or create persistent voter token in localStorage (unique per device/browser)
+    let voterToken = localStorage.getItem('voter_token');
+    if (!voterToken) {
+      voterToken = 'student-' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('voter_token', voterToken);
+    }
+    document.getElementById('voter-id-display').textContent = voterToken;
+
+    let currentPollId = null;
+    let socket = null;
+    let selectedChoice = null;
+    let currentVoteId = null;
+    let isVoteConfirmed = false;
+    let pendingVotePayload = null;
+
+    // Retry configuration (Campus Wi-Fi resilience)
+    const ACK_TIMEOUT_MS = 1000;
+    const MAX_RETRIES = 5;
+    let retryTimer = null;
+    let retryAttempt = 0;
+    let lastTransmissionTimestamp = 0;
+
+    const badge = document.getElementById('conn-badge');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const submittingCard = document.getElementById('submitting-card');
+    const confirmedCard = document.getElementById('confirmed-card');
+    const retryCard = document.getElementById('retry-card');
+    const ackReceiptText = document.getElementById('ack-receipt-text');
+    const ackUuidText = document.getElementById('ack-uuid-text');
+    const retryDesc = document.getElementById('retry-desc');
+    const latencyDisplay = document.getElementById('latency-display');
+
+    function uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // =====================================================================================
+    // WEBSOCKET INITIALIZATION & CONNECTION RECOVERY
+    // =====================================================================================
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
+
+      socket = new WebSocket(wsUrl);
+
+      socket.onopen = () => {
+        badge.className = 'badge badge-online';
+        badge.innerHTML = '● Connected';
+        if (!isVoteConfirmed) {
+          enableOptionButtons();
+        }
+        // If reconnecting with an unconfirmed pending vote, re-trigger transmission
+        if (pendingVotePayload && !isVoteConfirmed) {
+          transmitVoteWithRetry();
+        }
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleIncomingMessage(data);
+        } catch (e) {
+          console.error("Failed to parse incoming WS frame:", e);
+        }
+      };
+
+      socket.onclose = () => {
+        badge.className = 'badge badge-offline';
+        badge.innerHTML = '● Disconnected';
+        // Auto-reconnect after 1.5 seconds
+        setTimeout(connectWebSocket, 1500);
+      };
+
+      socket.onerror = (err) => {
+        console.warn("WebSocket error occurred:", err);
+      };
+    }
+
+    function handleIncomingMessage(msg) {
+      if (msg.type === 'NO_ACTIVE_POLL') {
+        currentPollId = null;
+        questionText.textContent = '⏳ Waiting for active poll... (Create one at /create.html)';
+        optionsContainer.innerHTML = '<div style="color: var(--text-muted); padding: 12px; text-align: center; font-size: 0.9rem;">No active poll is running yet. When the instructor publishes a question, it will appear here instantly!</div>';
+        submittingCard.style.display = 'none';
+        confirmedCard.style.display = 'none';
+        retryCard.style.display = 'none';
+      } else if (msg.type === 'CONNECTION_READY' || msg.type === 'POLL_CHANGED') {
+        currentPollId = msg.poll_id;
+        questionText.textContent = msg.question;
+
+        // Reset vote status for the new poll
+        isVoteConfirmed = false;
+        selectedChoice = null;
+        currentVoteId = null;
+        pendingVotePayload = null;
+        clearTimeout(retryTimer);
+
+        submittingCard.style.display = 'none';
+        confirmedCard.style.display = 'none';
+        retryCard.style.display = 'none';
+
+        renderOptions(msg.options);
+      } else if (msg.type === 'VOTE_ACK') {
+        // Application-level ACK received for our specific vote ID
+        if (msg.vote_id === currentVoteId) {
+          clearTimeout(retryTimer);
+          const rtt = Date.now() - lastTransmissionTimestamp;
+          latencyDisplay.textContent = `${rtt} ms RTT`;
+
+          isVoteConfirmed = true;
+          pendingVotePayload = null;
+
+          submittingCard.style.display = 'none';
+          retryCard.style.display = 'none';
+          confirmedCard.style.display = 'block';
+
+          if (msg.status === 'ACK_ACCEPTED') {
+            ackReceiptText.textContent = `Vote for Choice [${msg.choice}] safely recorded in live tally!`;
+          } else if (msg.status === 'ACK_DUPLICATE_IGNORED') {
+            ackReceiptText.textContent = `Idempotent ACK: Your vote was already committed. Duplicate vote ignored.`;
+          }
+          ackUuidText.textContent = `Vote UUID: ${msg.vote_id}`;
+          disableOptionButtons();
+        }
+      }
+    }
+
+    function renderOptions(options) {
+      optionsContainer.innerHTML = '';
+      for (const [key, label] of Object.entries(options)) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-option';
+        btn.dataset.choice = key;
+        // textContent (not innerHTML): labels come from whoever created the poll
+        const keySpan = document.createElement('span');
+        keySpan.className = 'key';
+        keySpan.textContent = key;
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'label';
+        labelSpan.textContent = label;
+        btn.append(keySpan, labelSpan);
+        if (isVoteConfirmed) {
+          btn.disabled = true;
+          if (selectedChoice === key) btn.classList.add('selected');
+        } else {
+          btn.addEventListener('click', () => castVote(key));
+        }
+        optionsContainer.appendChild(btn);
+      }
+    }
+
+    function enableOptionButtons() {
+      const buttons = optionsContainer.querySelectorAll('.btn-option');
+      buttons.forEach(btn => btn.disabled = false);
+    }
+
+    function disableOptionButtons() {
+      const buttons = optionsContainer.querySelectorAll('.btn-option');
+      buttons.forEach(btn => btn.disabled = true);
+    }
+
+    // =====================================================================================
+    // APPLICATION-LEVEL VOTE DISPATCH & RETRY WITH EXPONENTIAL BACKOFF
+    // =====================================================================================
+    function castVote(choice) {
+      if (isVoteConfirmed) return;
+
+      selectedChoice = choice;
+      currentVoteId = uuidv4();
+      retryAttempt = 0;
+
+      // Visually select chosen button
+      const buttons = optionsContainer.querySelectorAll('.btn-option');
+      buttons.forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.choice === choice);
+        btn.disabled = true;
+      });
+
+      pendingVotePayload = {
+        type: 'CAST_VOTE',
+        poll_id: currentPollId,
+        voter_token: voterToken,
+        vote_id: currentVoteId,
+        choice: choice
+      };
+
+      submittingCard.style.display = 'flex';
+      retryCard.style.display = 'none';
+
+      transmitVoteWithRetry();
+    }
+
+    function transmitVoteWithRetry() {
+      if (isVoteConfirmed || !pendingVotePayload) return;
+
+      lastTransmissionTimestamp = Date.now();
+
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(pendingVotePayload));
+      }
+
+      // Schedule application-level ACK timeout
+      clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => {
+        if (!isVoteConfirmed && retryAttempt < MAX_RETRIES) {
+          retryAttempt++;
+          // Exponential backoff + random jitter: Base * 2^attempt + jitter(0..200ms)
+          const backoffDelay = Math.min(3000, Math.pow(1.5, retryAttempt) * 300 + Math.floor(Math.random() * 200));
+          
+          retryCard.style.display = 'block';
+          submittingCard.style.display = 'none';
+          retryDesc.textContent = `No ACK in ${ACK_TIMEOUT_MS}ms. Retrying attempt ${retryAttempt}/${MAX_RETRIES} in ${Math.round(backoffDelay)}ms...`;
+
+          retryTimer = setTimeout(transmitVoteWithRetry, backoffDelay);
+        } else if (retryAttempt >= MAX_RETRIES) {
+          retryDesc.textContent = "Max retries reached. Check campus Wi-Fi connection.";
+        }
+      }, ACK_TIMEOUT_MS);
+    }
+
+    // Connect on load
+    connectWebSocket();
+  </script>
+</body>
+</html>

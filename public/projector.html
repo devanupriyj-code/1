@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Projector Screen | Live Telemetry</title>
+  <style>
+    :root {
+      --bg: #0b1329;
+      --card-bg: #152243;
+      --card-header: #1c2d59;
+      --border: #293d6e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --color-A: #38bdf8;
+      --color-B: #818cf8;
+      --color-C: #f472b6;
+      --color-D: #34d399;
+      
+      --accent: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 48px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .title-group h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-group p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-top: 4px;
+    }
+
+    .telemetry-badges {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .badge-stream {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      flex: 1;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .question-header {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 32px;
+      color: #f1f5f9;
+    }
+
+    .bars-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bar-label-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .bar-label-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill-key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    .pill-A { background: var(--color-A); color: #0b1329; }
+    .pill-B { background: var(--color-B); color: #0b1329; }
+    .pill-C { background: var(--color-C); color: #0b1329; }
+    .pill-D { background: var(--color-D); color: #0b1329; }
+
+    .bar-track {
+      height: 38px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9px;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fill-A { background: linear-gradient(90deg, #0284c7, var(--color-A)); }
+    .fill-B { background: linear-gradient(90deg, #6366f1, var(--color-B)); }
+    .fill-C { background: linear-gradient(90deg, #db2777, var(--color-C)); }
+    .fill-D { background: linear-gradient(90deg, #059669, var(--color-D)); }
+
+    /* Side Stats Panel */
+    .sidebar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .sidebar-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .stat-box {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+      color: #60a5fa;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .protocol-specs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+
+    .protocol-specs strong {
+      color: #e2e8f0;
+    }
+
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-group">
+      <h1>Classroom Live Polling Telemetry</h1>
+      <p>High-Concurrency Campus Wi-Fi In-Memory Architecture (Computer Networks Project 26)</p>
+    </div>
+    <div class="telemetry-badges">
+      <a href="/create.html" style="color: #94a3b8; text-decoration: none; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">➕ Create Poll</a>
+      <a href="/voter.html" style="color: #94a3b8; text-decoration: none; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">📱 Voter UI</a>
+      <div id="sse-badge" class="badge-stream">
+        <span class="pulse-dot"></span>
+        <span id="sse-status-text">SSE Live Stream: Connected</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <!-- Active Poll & Animated Charts -->
+    <div class="question-card">
+      <div class="question-header" id="question-title">
+        Loading classroom poll question...
+      </div>
+
+      <div class="bars-container" id="bars-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Telemetry Statistics Side Panel -->
+    <div class="sidebar-card">
+      <h3>Live Metrics</h3>
+
+      <div class="stat-box">
+        <div class="stat-number" id="stat-total-votes">0</div>
+        <div class="stat-label">Total Verified Votes</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-number" style="color: #f59e0b;" id="stat-duplicate-attempts">0</div>
+        <div class="stat-label">Duplicates Caught (Idempotency)</div>
+      </div>
+
+      <div class="protocol-specs">
+        <strong>Network Architecture:</strong><br>
+        &bull; Transport: <code>Server-Sent Events (SSE)</code><br>
+        &bull; Cadence: Micro-batched every 100ms<br>
+        &bull; In-Memory Data Store: O(1) Python sets &amp; dicts<br>
+        &bull; Zero Socket Starvation Under Burst Fan-in
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Project 26 &bull; Real-time Projector Telemetry &bull; Designed for 200+ Synchronized Wi-Fi Student Voters
+  </footer>
+
+  <script>
+    // =====================================================================================
+    // SERVER-SENT EVENTS (SSE) LISTENER FOR CLASSROOM PROJECTOR
+    // =====================================================================================
+
+    const questionTitle = document.getElementById('question-title');
+    const barsList = document.getElementById('bars-list');
+    const statTotalVotes = document.getElementById('stat-total-votes');
+    const statDuplicateAttempts = document.getElementById('stat-duplicate-attempts');
+    const sseBadge = document.getElementById('sse-badge');
+    const sseStatusText = document.getElementById('sse-status-text');
+
+    let currentOptions = {};
+
+    function initProjectorSSE() {
+      // Connect to native SSE endpoint
+      const eventSource = new EventSource('/events');
+
+      eventSource.onopen = () => {
+        sseBadge.style.borderColor = '#10b981';
+        sseStatusText.textContent = 'SSE Live Stream: 100ms Micro-Batch';
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleTelemetryUpdate(data);
+        } catch (e) {
+          console.warn("Non-JSON SSE frame:", event.data);
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error("SSE connection lost. Browser will auto-reconnect...", err);
+        sseBadge.style.borderColor = '#ef4444';
+        sseStatusText.textContent = 'Reconnecting Telemetry...';
+      };
+    }
+
+    function handleTelemetryUpdate(data) {
+      if (data.type === 'NO_ACTIVE_POLL') {
+        questionTitle.textContent = '⏳ Waiting for active poll... (Create one at /create.html)';
+        barsList.innerHTML = '<div style="color: var(--text-muted); padding: 32px; text-align: center; font-size: 1.1rem;">No poll has been published yet.<br><br><a href="/create.html" style="color: #60a5fa; text-decoration: underline;">Click here to create the first poll &rarr;</a></div>';
+        statTotalVotes.textContent = '0';
+        statDuplicateAttempts.textContent = '0';
+      } else if (data.type === 'POLL_SNAPSHOT') {
+        questionTitle.textContent = data.poll.question;
+        currentOptions = data.poll.options;
+        renderInitialBars(data.poll.options);
+        updateTallyAndPercentages(data.poll.tally, data.poll.totalVotes, data.poll.duplicateAttempts);
+      } else if (data.type === 'TALLY_UPDATE') {
+        updateTallyAndPercentages(data.tally, data.totalVotes, data.duplicateAttempts);
+      }
+    }
+
+    const paletteColors = {
+      A: { pill: '#38bdf8', fill: 'linear-gradient(90deg, #0284c7, #38bdf8)' },
+      B: { pill: '#818cf8', fill: 'linear-gradient(90deg, #6366f1, #818cf8)' },
+      C: { pill: '#f472b6', fill: 'linear-gradient(90deg, #db2777, #f472b6)' },
+      D: { pill: '#34d399', fill: 'linear-gradient(90deg, #059669, #34d399)' },
+      E: { pill: '#fbbf24', fill: 'linear-gradient(90deg, #d97706, #fbbf24)' },
+      F: { pill: '#a78bfa', fill: 'linear-gradient(90deg, #7c3aed, #a78bfa)' }
+    };
+
+    function renderInitialBars(options) {
+      barsList.innerHTML = '';
+      for (const [key, label] of Object.entries(options)) {
+        const theme = paletteColors[key] || { pill: '#94a3b8', fill: '#64748b' };
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <div class="bar-label-group">
+            <div class="bar-label-left">
+              <span class="pill-key" style="background: ${theme.pill}; color: #0b1329;">${key}</span>
+              <span class="opt-label"></span>
+            </div>
+            <div id="stat-val-${key}" style="font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;">
+              0 votes (0%)
+            </div>
+          </div>
+          <div class="bar-track">
+            <div id="bar-fill-${key}" class="bar-fill" style="width: 0%; background: ${theme.fill};"></div>
+          </div>
+        `;
+        // Label is free text from the poll creator: set it as text, never as HTML
+        row.querySelector('.opt-label').textContent = label;
+        barsList.appendChild(row);
+      }
+    }
+
+    function updateTallyAndPercentages(tally, totalVotes, duplicateAttempts) {
+      statTotalVotes.textContent = totalVotes;
+      statDuplicateAttempts.textContent = duplicateAttempts;
+
+      for (const [key, count] of Object.entries(tally)) {
+        const percentage = totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : '0.0';
+        
+        const statValEl = document.getElementById(`stat-val-${key}`);
+        const barFillEl = document.getElementById(`bar-fill-${key}`);
+
+        if (statValEl && barFillEl) {
+          statValEl.textContent = `${count} votes (${percentage}%)`;
+          barFillEl.style.width = `${percentage}%`;
+        }
+      }
+    }
+
+    // Launch SSE on page load
+    initProjectorSSE();
+  </script>
+</body>
+</html>
