@@ -85,6 +85,31 @@ Once the server is running, open the following URLs in your browser:
 
 ---
 
+## 🧪 Testing & Evaluation Suite
+
+### 1,000 and 10,000 simultaneous WebSocket connections
+
+Start the server, then run either benchmark in another terminal:
+
+```bash
+pip install websockets
+python tests/load_test_1000.py --output tests/benchmark_1000_results.json
+python tests/load_test_10000.py --output tests/benchmark_10000_results.json
+```
+
+Each script creates and activates a new poll on the target server, holds all connections open until every client is ready, then releases all voters together. After an accepted vote, 10% of clients resend the identical vote. The test checks both acknowledgements and the server's final tally and exits nonzero on failure. Since it activates a new poll and generates substantial load, use a dedicated test server, not a live classroom. Override the server with `--server http://HOST:PORT`; use `--help` for timeout and connection ramp options. The 10,000-connection test requires enough open file descriptors and local network resources on both client and server.
+
+The included result files record one run on an Apple M4 Mac (macOS 26.5.2, Python 3.14.2), with both client and server on the same machine. FastAPI 0.138.0, Uvicorn 0.49.0, and websockets 16.0 were used. Latency is the time from client send to acknowledgement, including client scheduling and both initial votes and retries. Vote-and-cleanup time also includes closing sockets. `queueLength` is cumulative across polls, and the active socket count is a snapshot while the server may still be processing disconnects.
+
+| Concurrent connections | Accepted | Duplicate retries ignored | Errors | Mean ACK latency | p95 ACK latency |
+|---:|---:|---:|---:|---:|---:|
+| 1,000 | 1,000 | 100 | 0 | 36.35 ms | 42.09 ms |
+| 10,000 | 10,000 | 1,000 | 0 | 603.05 ms | 894.23 ms |
+
+These are local single-run measurements, not a guarantee of capacity or latency over campus Wi-Fi. The retry test resends messages deliberately; it does not inject packet loss or test server crashes. No projector clients were connected during these runs.
+
+---
+
 ## 📊 REST & WebSocket Endpoints
 
 | Endpoint | Protocol | Purpose |
