@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "server": "http://127.0.0.1:31337",
+  "poll_id": "poll-134c83",
+  "requested_connections": 10000,
+  "established_connections": 10000,
+  "connection_seconds": 3.648,
+  "vote_and_cleanup_seconds": 1.889,
+  "acknowledgements": {
+    "ACK_ACCEPTED": 10000,
+    "ACK_DUPLICATE_IGNORED": 1000,
+    "errors": 0
+  },
+  "expected_duplicate_retries": 1000,
+  "latency_ms": {
+    "samples": 11000,
+    "min": 437.59604200022295,
+    "mean": 603.0534473054457,
+    "p50": 574.4722499948693,
+    "p95": 894.2272347885591,
+    "p99": 899.2247191580827,
+    "max": 900.6880000088131
+  },
+  "server_metrics": {
+    "poll_id": "poll-134c83",
+    "totalVotes": 10000,
+    "duplicateAttempts": 1000,
+    "tally": {
+      "A": 2461,
+      "B": 2511,
+      "C": 2503,
+      "D": 2525
+    },
+    "queueLength": 11000,
+    "activeSseClients": 0,
+    "activeWsClients": 1564,
+    "totalPolls": 2
+  },
+  "errors": []
+}
